@@ -139,14 +139,14 @@ def run(cfg: DictConfig):
     world.set_policy(policy)
 
     start_time = time.time()
-    metrics = world.evaluate_from_dataset(
-        dataset,
-        start_steps=eval_start_idx.tolist(),
-        goal_offset_steps=cfg.eval.goal_offset_steps,
-        eval_budget=cfg.eval.eval_budget,
+    metrics = world.evaluate(
+        dataset=dataset,
         episodes_idx=eval_episodes.tolist(),
+        start_steps=eval_start_idx.tolist(),
+        goal_offset=cfg.eval.goal_offset_steps,
+        eval_budget=cfg.eval.eval_budget,
         callables=OmegaConf.to_container(cfg.eval.get("callables"), resolve=True),
-        video_path=results_path,
+        video=results_path,
     )
     end_time = time.time()
     
@@ -165,6 +165,7 @@ def run(cfg: DictConfig):
         f.write("==== RESULTS ====\n")
         f.write(f"metrics: {metrics}\n")
         f.write(f"evaluation_time: {end_time - start_time} seconds\n")
+    world.close()
 
 
 if __name__ == "__main__":
